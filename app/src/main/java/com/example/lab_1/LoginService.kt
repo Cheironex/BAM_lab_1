@@ -2,13 +2,10 @@ package com.example.lab_1
 
 import android.app.Service
 import android.content.Intent
-import android.os.IBinder
-import java.util.*
-import kotlin.concurrent.timer
 import android.os.Binder
+import android.os.IBinder
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.broadcast
-import kotlinx.coroutines.channels.produce
+import java.util.*
 
 
 class LoginService : Service() {
@@ -20,8 +17,9 @@ class LoginService : Service() {
     }
     private var userName: String? = String()
 
-    private var JobList = mutableListOf<Deferred<Int>>()
-    var shouldRun = true
+    private var jobList = mutableListOf<Deferred<Int>>()
+    private var shouldRun = true
+
     override fun onBind(intent: Intent): IBinder {
         userName = intent.getStringExtra(USER_NAME)
         shouldRun = true
@@ -37,9 +35,9 @@ class LoginService : Service() {
 
 
     fun startTimer() = runBlocking{
-        val Scope = CoroutineScope(Dispatchers.IO)
+        CoroutineScope(Dispatchers.IO)
         val job =  async {
-            var time = 0;
+            var time = 0
 
             while(shouldRun) {
                 println(this.toString() + " time: " + time++)
@@ -48,12 +46,12 @@ class LoginService : Service() {
             }
             return@async time
         }
-        JobList.add(job)
+        jobList.add(job)
     }
 
-    fun getTime() = runBlocking {
-        if(JobList.size>0){
-            val number = JobList[0].await()
+    private fun getTime() = runBlocking {
+        if(jobList.size>0){
+            val number = jobList[0].await()
             Intent().also { intent ->
                 intent.putExtra(USER_NAME, userName)
                 intent.putExtra("number", number.toString())

@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
-    fun ButtonClick(view: View) {
+    fun buttonClick(view: View) {
         val text = findViewById<EditText>(R.id.editTextTextPersonName)
         val name = text.text.toString()
         val intent = Intent(this, UserActivity::class.java).apply {

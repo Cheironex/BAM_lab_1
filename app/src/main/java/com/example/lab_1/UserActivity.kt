@@ -2,23 +2,19 @@ package com.example.lab_1
 
 import android.content.*
 import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import android.widget.TextView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
+import androidx.appcompat.app.AppCompatActivity
 
 class UserActivity : AppCompatActivity() {
 
-    private var ServiceList = mutableListOf<LoginService.LocalBinder>()
     private var mBound: Boolean = false
     private lateinit var mService: LoginService
-    val numberReceiver: BroadcastReceiver = NumberReceiver()
-    var userName: String? = String()
+    private val numberReceiver: BroadcastReceiver = NumberReceiver()
+    private var userName: String? = String()
 
     private val connection = object : ServiceConnection {
 
@@ -40,12 +36,16 @@ class UserActivity : AppCompatActivity() {
         setContentView(R.layout.activity_button)
 
         this.userName = intent.getStringExtra(USER_NAME)
-        val textView = findViewById<TextView>(R.id.textView).apply {
+        findViewById<TextView>(R.id.textView).apply {
             text = userName
         }
 
-        val filter = IntentFilter(ConnectivityManager.ACTION_CAPTIVE_PORTAL_SIGN_IN).apply {
-            addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+        val filter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            IntentFilter(ConnectivityManager.ACTION_CAPTIVE_PORTAL_SIGN_IN).apply {
+                addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+            }
+        } else {
+            TODO("VERSION.SDK_INT < M")
         }
         registerReceiver(numberReceiver, filter)
     }
@@ -55,7 +55,7 @@ class UserActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun OnServiceButtonClick(view: View) {
+    fun onServiceButtonClick(view: View) {
         Intent(this, LoginService::class.java).also { intent ->
             intent.putExtra(USER_NAME,this.userName)
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
@@ -65,12 +65,12 @@ class UserActivity : AppCompatActivity() {
         }
     }
 
-    fun OnStopClick(view: View) {
+    fun onStopClick(view: View) {
         if (mBound) {
             unbindService(connection)
             mBound = false
         } else {
-            println("No Services Runnig")
+            println("No Services Running")
         }
     }
 }
