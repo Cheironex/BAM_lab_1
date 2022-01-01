@@ -1,13 +1,18 @@
 package com.example.lab_1
 
 import android.content.*
-import android.net.ConnectivityManager
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
+import com.example.lab_1.UserData.User
+import com.example.lab_1.UserData.UserDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.lang.Exception
 
 class UserActivity : AppCompatActivity() {
 
@@ -32,7 +37,7 @@ class UserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_button)
+        setContentView(R.layout.user_activity)
 
         this.userName = intent.getStringExtra(USER_NAME)
         findViewById<TextView>(R.id.textView).apply {
@@ -68,6 +73,25 @@ class UserActivity : AppCompatActivity() {
             mBound = false
         } else {
             println("No Services Running")
+        }
+    }
+
+    fun onDatabaseClick(view: View) {
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+            try {
+                val db = Room.databaseBuilder(
+                    applicationContext,
+                    UserDatabase::class.java, "UserDatabase"
+                ).build()
+
+                val userData = db.userDao().getAll()
+                userData.forEach { user ->
+                    println("User Name: ${user.name} ||| User Number : ${user.number}")
+                }
+            } catch (e: Exception) {
+                print("Error: $e !!!!")
+            }
         }
     }
 }
