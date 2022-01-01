@@ -20,7 +20,6 @@ class UserActivity : AppCompatActivity() {
 
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
             val binder = service as LoginService.LocalBinder
             mService = binder.getService()
             mBound = true
@@ -40,13 +39,11 @@ class UserActivity : AppCompatActivity() {
             text = userName
         }
 
-        val filter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val filter =
             IntentFilter(ConnectivityManager.ACTION_CAPTIVE_PORTAL_SIGN_IN).apply {
                 addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
             }
-        } else {
-            TODO("VERSION.SDK_INT < M")
-        }
+
         registerReceiver(numberReceiver, filter)
     }
 

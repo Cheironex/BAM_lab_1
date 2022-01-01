@@ -12,12 +12,12 @@ class LoginService : Service() {
     private val binder = LocalBinder()
 
     inner class LocalBinder : Binder() {
-        // Return this instance of LocalService so clients can call public methods
         fun getService(): LoginService = this@LoginService
     }
     private var userName: String? = String()
 
-    private var jobList = mutableListOf<Deferred<Int>>()
+    private var jobList = mutableListOf<Job>()
+    private var numbers = mutableListOf<Int>()
     private var shouldRun = true
 
     override fun onBind(intent: Intent): IBinder {
@@ -27,7 +27,6 @@ class LoginService : Service() {
     }
     override fun onCreate() {
         super.onCreate()
-
         startTimer()
 
     }
@@ -35,30 +34,30 @@ class LoginService : Service() {
 
 
     fun startTimer() = runBlocking{
-        CoroutineScope(Dispatchers.IO)
-        val job =  async {
-            var time = 0
-
+        numbers.add(0);
+        var numberId = numbers.size - 1
+        val scope = CoroutineScope(Dispatchers.IO)
+        val job = scope.launch {
+            val id =numberId
             while(shouldRun) {
-                println(this.toString() + " time: " + time++)
+                println(this.toString() + " time: " + numbers[id]++)
 
                 delay(1000)
             }
-            return@async time
         }
         jobList.add(job)
     }
 
     private fun getTime() = runBlocking {
-        if(jobList.size>0){
-            val number = jobList[0].await()
+
+            val number = numbers[0]
+        println("Starting Broadcast with number = $number")
             Intent().also { intent ->
                 intent.putExtra(USER_NAME, userName)
                 intent.putExtra("number", number.toString())
-//                intent.setAction("android.intent.action.ACTION_AIRPLANE_MODE_CHANGED")
                 sendBroadcast(intent)
             }
-        }
+
 
     }
 
