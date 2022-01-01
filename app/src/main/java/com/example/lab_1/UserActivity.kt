@@ -40,8 +40,8 @@ class UserActivity : AppCompatActivity() {
         }
 
         val filter =
-            IntentFilter(ConnectivityManager.ACTION_CAPTIVE_PORTAL_SIGN_IN).apply {
-                addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+            IntentFilter().apply {
+                addAction("NumberAction")
             }
 
         registerReceiver(numberReceiver, filter)

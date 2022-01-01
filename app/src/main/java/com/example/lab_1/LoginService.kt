@@ -48,23 +48,23 @@ class LoginService : Service() {
         jobList.add(job)
     }
 
-    private fun getTime() = runBlocking {
+    private fun getTime() {
 
-            val number = numbers[0]
-        println("Starting Broadcast with number = $number")
-            Intent().also { intent ->
-                intent.putExtra(USER_NAME, userName)
-                intent.putExtra("number", number.toString())
-                sendBroadcast(intent)
-            }
-
-
+        val number = numbers[0]
+        Intent().also { intent ->
+            intent.putExtra(USER_NAME, userName)
+            intent.putExtra("NUMBER", number.toString())
+            intent.action = "NumberAction"
+            sendBroadcast(intent)
+        }
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
 
         shouldRun = false
         getTime()
+        numbers.clear()
+        jobList.clear()
 
         return super.onUnbind(intent)
     }
