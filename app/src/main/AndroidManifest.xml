@@ -31,6 +31,12 @@
                 <action android:name="NumberAction" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name="com.example.lab_1.LabContentProvider"
+            android:authorities="com.demo.user.provider"
+            android:enabled="true"
+            android:exported="true"></provider>
     </application>
 
 </manifest>

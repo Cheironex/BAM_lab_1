@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ContentReciverLab1</string>
+    <string name="loadButtonText">Load Data</string>
+</resources>
